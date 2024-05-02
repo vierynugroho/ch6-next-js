@@ -22,7 +22,7 @@ export default async function MealsPage() {
 				</p>
 			</header>
 			<main className={classes.main}>
-				<Suspense fallback={<p className={classes.loading}>Loading Your Meals</p>}>
+				<Suspense fallback={<p className={classes.loading}>Loading Your Meals...</p>}>
 					<Meals />
 				</Suspense>
 			</main>
