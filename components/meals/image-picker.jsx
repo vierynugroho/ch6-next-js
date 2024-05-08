@@ -38,6 +38,7 @@ export default function ImagePicker({ label, name }) {
 					{pickedImage && (
 						<Image
 							src={pickedImage}
+							name={name}
 							alt='The image selected by user'
 							fill
 						/>
