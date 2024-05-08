@@ -10,7 +10,7 @@ export const getMeals = async () => {
 };
 
 export const getMeal = async (slug) => {
-	// await new Promise((resolve) => setTimeout(resolve, 3000));
+	await new Promise((resolve) => setTimeout(resolve, 5000));
 
 	// throw new Error('Failed Loading Your Meals...');
 	return database.prepare(`SELECT * FROM meals where slug = ?`).get(slug);
