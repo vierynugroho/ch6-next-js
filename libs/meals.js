@@ -19,6 +19,17 @@ export const getMeal = async (slug) => {
 };
 
 export const saveMeal = async (meal) => {
+	function slugify(title) {
+		return title
+			.toLowerCase()
+			.replace(/\s+/g, '-') // Mengganti spasi dengan tanda hubung
+			.replace(/[^a-z0-9-]/g, '') // Menghapus karakter non-alphanumeric kecuali tanda hubung
+			.replace(/-{2,}/g, '-') // Mengganti dua atau lebih tanda hubung berturut-turut dengan satu tanda hubung
+			.replace(/^-|-$/g, ''); // Menghapus tanda hubung di awal atau akhir string jika ada
+	}
+
+	meal.slug = slugify(meal.title);
+
 	const extension = meal.image.name.split('.').pop();
 	const fileName = `${meal.title}.${extension}`;
 
@@ -43,7 +54,7 @@ export const saveMeal = async (meal) => {
 		)
 		.run({
 			title: meal.title,
-			slug: meal.title,
+			slug: slugify(meal.title),
 			summary: meal.summary,
 			instructions: meal.instructions,
 			creator: meal.creator,
