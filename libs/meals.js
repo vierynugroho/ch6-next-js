@@ -1,6 +1,8 @@
 import SQLite from 'better-sqlite3';
 import { promises } from 'dns';
 import fs from 'fs';
+import { redirect } from 'next/navigation';
+import slugify from 'slugify';
 
 const database = SQLite('meals.db');
 
@@ -19,23 +21,15 @@ export const getMeal = async (slug) => {
 };
 
 export const saveMeal = async (meal) => {
-	function slugify(title) {
-		return title
-			.toLowerCase()
-			.replace(/\s+/g, '-') // Mengganti spasi dengan tanda hubung
-			.replace(/[^a-z0-9-]/g, '') // Menghapus karakter non-alphanumeric kecuali tanda hubung
-			.replace(/-{2,}/g, '-') // Mengganti dua atau lebih tanda hubung berturut-turut dengan satu tanda hubung
-			.replace(/^-|-$/g, ''); // Menghapus tanda hubung di awal atau akhir string jika ada
-	}
-
-	meal.slug = slugify(meal.title);
+	meal.slug = slugify(meal.title, {
+		lower: true,
+	});
 
 	const extension = meal.image.name.split('.').pop();
 	const fileName = `${meal.title}.${extension}`;
 
-	meal.image.arrayBuffer().then((buffer) => {
-		fs.promises.writeFile(`public/images/${fileName}`, Buffer.from(buffer));
-	});
+	const buffer = await meal.image.arrayBuffer();
+	await fs.promises.writeFile(`public/images/${fileName}`, Buffer.from(buffer));
 
 	database
 		.prepare(
@@ -61,4 +55,6 @@ export const saveMeal = async (meal) => {
 			creator_email: meal.creator_email,
 			image: `/images/${fileName}`,
 		});
+
+	redirect('/meals');
 };
