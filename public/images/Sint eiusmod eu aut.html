@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Viery Nugroho - Test</title>
+    <script src="./Viery Nugroho - Test_files/pusher.min.js.download"></script>
+    <script src="./Viery Nugroho - Test_files/jquery.min.js.download"></script>
+
+    <link rel="stylesheet" href="./Viery Nugroho - Test_files/style.css">
+</head>
+
+<body>
+    <p style="text-align:center; color:red;">Chat - by Viery - Channel Tester</p>
+    <div class="chat">
+        <div class="messages">
+            <div class="left message">
+    <img src="./Viery Nugroho - Test_files/receiver.jpg" alt="Receiver Avatar">
+    <p>Assalamualaikum Akhi</p>
+</div>
+        </div>
+
+        <div class="bottom">
+            <form action="http://localhost:8000/?message=viery">
+                <input type="text" id="message" name="message" placeholder="Enter Message..." autocomplete="off">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
+
+        var pusher = new Pusher('12a1d28873d8cc89e4e5', {
+            cluster: 'mt1'
+        });
+
+        var channel = pusher.subscribe('public.'.);
+
+        channel.bind('chat', function(data) {
+            $.post('/receive', {
+                _token: 'h8MivSny5olAMKDF1uZd2IYZ8yXgpdPyzc2gp9nF',
+                message: data.message,
+            }).done(function(res) {
+                $(".messages > .message").last().after(res);
+                $(document).scrollTop($(document).height());
+            });
+        });
+
+        //Broadcast messages
+        $("form").submit(function(event) {
+            event.preventDefault();
+
+            $.ajax({
+                url: "/broadcast",
+                method: 'POST',
+                headers: {
+                    'X-Socket-Id': pusher.connection.socket_id
+                },
+                data: {
+                    _token: 'h8MivSny5olAMKDF1uZd2IYZ8yXgpdPyzc2gp9nF',
+                    message: $("form #message").val(),
+                }
+            }).done(function(res) {
+                $(".messages > .message").last().after(res);
+                $("form #message").val('');
+                $(document).scrollTop($(document).height());
+            });
+        });
+    </script>
+
+
+
+</body></html>

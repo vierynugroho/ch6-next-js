@@ -11,6 +11,14 @@ const shareMeal = async (formData) => {
 		instructions: formData.get('instructions'),
 	};
 
+	if (!meal.title || meal.title.trim() === '') {
+		throw new Error('Meal title cannot be empty');
+	}
+
+	if (!meal.creator_email || !meal.creator_email.includes('@')) {
+		throw new Error('Meal creator email cannot be empty or format email is invalid');
+	}
+
 	await saveMeal(meal);
 };
 
