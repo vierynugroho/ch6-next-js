@@ -71,7 +71,11 @@ export default function ShareMealPage() {
 						name='image'
 					/>
 
-					{state.message && <p>{state.message}</p>}
+					{state.message && (
+						<p style={{ fontWeight: 'bold', fontStyle: 'italic' }}>
+							<span style={{ color: 'red' }}>Error! </span> {state.message}
+						</p>
+					)}
 
 					<p className={classes.actions}>
 						<MealsFormSubmit type={'submit'} />

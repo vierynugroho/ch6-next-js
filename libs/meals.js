@@ -34,6 +34,7 @@ export const saveMeal = async (meal) => {
 	meal.slug = slugify(meal.title, {
 		lower: true,
 	});
+
 	meal.instructions = xss(meal.instructions);
 	meal.image = `/images/${fileName}`;
 

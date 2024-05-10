@@ -1,5 +1,7 @@
 'use server';
-import { saveMeal } from './meals';
+import { revalidatePath } from 'next/cache';
+import { getMeal, saveMeal } from './meals';
+import slugify from 'slugify';
 
 const shareMeal = async (prevState, formData) => {
 	const meal = {
@@ -11,6 +13,13 @@ const shareMeal = async (prevState, formData) => {
 		instructions: formData.get('instructions'),
 	};
 
+	const slug = slugify(meal.title);
+	const slugIsExist = await getMeal(slug);
+
+	if (slug === slugIsExist.slug) {
+		return { message: 'Your meal has been served, please add other meal' };
+	}
+
 	if (!meal.title || meal.title.trim() === '') {
 		return { message: 'Meal title cannot be empty' };
 	}
@@ -20,6 +29,7 @@ const shareMeal = async (prevState, formData) => {
 	}
 
 	await saveMeal(meal);
+	revalidatePath('/meals');
 };
 
 export { shareMeal };
