@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { getMeal, saveMeal } from './meals';
 import slugify from 'slugify';
 import axios from 'axios';
+import { cookies } from 'next/headers';
 
 const shareMeal = async (prevState, formData) => {
 	const meal = {
@@ -43,6 +44,8 @@ async function signInAction(prevState, formData) {
 			email,
 			password,
 		});
+
+		cookies().set('_token', res.data.data);
 
 		console.log('response sukses?');
 		console.log(res.data);
