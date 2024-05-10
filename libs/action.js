@@ -1,7 +1,7 @@
 'use server';
 import { saveMeal } from './meals';
 
-const shareMeal = async (formData) => {
+const shareMeal = async (prevState, formData) => {
 	const meal = {
 		creator: formData.get('name'),
 		creator_email: formData.get('email'),
@@ -12,11 +12,11 @@ const shareMeal = async (formData) => {
 	};
 
 	if (!meal.title || meal.title.trim() === '') {
-		throw new Error('Meal title cannot be empty');
+		return { message: 'Meal title cannot be empty' };
 	}
 
 	if (!meal.creator_email || !meal.creator_email.includes('@')) {
-		throw new Error('Meal creator email cannot be empty or format email is invalid');
+		return { message: 'Meal creator email cannot be empty or format email is invalid' };
 	}
 
 	await saveMeal(meal);
