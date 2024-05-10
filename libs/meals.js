@@ -1,8 +1,8 @@
 import SQLite from 'better-sqlite3';
-import { promises } from 'dns';
 import fs from 'fs';
-import { redirect } from 'next/navigation';
 import slugify from 'slugify';
+import { redirect } from 'next/navigation';
+import xss from 'xss';
 
 const database = SQLite('meals.db');
 
@@ -21,15 +21,21 @@ export const getMeal = async (slug) => {
 };
 
 export const saveMeal = async (meal) => {
-	meal.slug = slugify(meal.title, {
-		lower: true,
-	});
-
 	const extension = meal.image.name.split('.').pop();
 	const fileName = `${meal.title}.${extension}`;
 
 	const buffer = await meal.image.arrayBuffer();
-	await fs.promises.writeFile(`public/images/${fileName}`, Buffer.from(buffer));
+	try {
+		await fs.promises.writeFile(`public/images/${fileName}`, Buffer.from(buffer));
+	} catch (error) {
+		throw new Error('Saving Image Failed!');
+	}
+
+	meal.slug = slugify(meal.title, {
+		lower: true,
+	});
+	meal.instructions = xss(meal.instructions);
+	meal.image = `/images/${fileName}`;
 
 	database
 		.prepare(
@@ -46,15 +52,7 @@ export const saveMeal = async (meal) => {
     )
     `
 		)
-		.run({
-			title: meal.title,
-			slug: slugify(meal.title),
-			summary: meal.summary,
-			instructions: meal.instructions,
-			creator: meal.creator,
-			creator_email: meal.creator_email,
-			image: `/images/${fileName}`,
-		});
+		.run(meal);
 
 	redirect('/meals');
 };
