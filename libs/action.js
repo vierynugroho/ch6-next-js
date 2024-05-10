@@ -2,6 +2,7 @@
 import { revalidatePath } from 'next/cache';
 import { getMeal, saveMeal } from './meals';
 import slugify from 'slugify';
+import axios from 'axios';
 
 const shareMeal = async (prevState, formData) => {
 	const meal = {
@@ -32,4 +33,26 @@ const shareMeal = async (prevState, formData) => {
 	revalidatePath('/meals');
 };
 
-export { shareMeal };
+async function signInAction(prevState, formData) {
+	console.log('[signInAction]', formData);
+	const email = formData.get('email');
+	const password = formData.get('password');
+
+	try {
+		const res = await axios.post('http://localhost:2000/api/v1/auth/login', {
+			email,
+			password,
+		});
+
+		console.log('response sukses?');
+		console.log(res.data);
+		return res.data;
+	} catch (err) {
+		console.log('error :', err);
+		return {
+			message: err.response.data.message || 'An error occurred',
+		};
+	}
+}
+
+export { shareMeal, signInAction };
