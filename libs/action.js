@@ -58,4 +58,26 @@ async function signInAction(prevState, formData) {
 	}
 }
 
-export { shareMeal, signInAction };
+async function getUsers() {
+	try {
+		const _token = cookies().get('_token').value;
+		// console.log(_token);
+		const config = {
+			headers: {
+				Authorization: `Bearer ${_token}`,
+			},
+		};
+
+		const res = await axios.get('http://localhost:2000/api/v1/products', config);
+
+		return res.data.data.products;
+	} catch (err) {
+		console.log('========================');
+		console.log('error :', err);
+		return {
+			message: err.response.data.message || 'An error occurred',
+		};
+	}
+}
+
+export { shareMeal, signInAction, getUsers };
